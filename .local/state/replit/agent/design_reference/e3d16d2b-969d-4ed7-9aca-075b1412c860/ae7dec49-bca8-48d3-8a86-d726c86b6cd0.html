@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CareerGuide AI - Your Personalized Career Path Assistant</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'inter': ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: '#2563EB',
+                        secondary: '#7C3AED',
+                        success: '#10B981',
+                        warning: '#F59E0B',
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.5s ease-in-out',
+                        'slide-up': 'slideUp 0.3s ease-out',
+                        'pulse-slow': 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    }
+                }
+            }
+        };
+    </script>
+    <style>
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .typing-indicator {
+            display: inline-block;
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background-color: #64748B;
+            animation: pulse-slow 1.4s infinite both;
+        }
+        .typing-indicator:nth-child(2) { animation-delay: 0.2s; }
+        .typing-indicator:nth-child(3) { animation-delay: 0.4s; }
+    </style>
+</head>
+<body class="font-inter bg-gray-50 text-gray-900">
+    <!-- @COMPONENT: Header -->
+    <header class="bg-white shadow-sm border-b border-gray-200">
+        <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-3">
+                    <div class="w-8 h-8 bg-gradient-to-r from-primary to-secondary rounded-lg flex items-center justify-center">
+                        <i class="fas fa-route text-white text-sm"></i>
+                    </div>
+                    <span class="text-xl font-semibold text-gray-900">CareerGuide AI</span>
+                </div>
+                <div class="hidden md:flex items-center space-x-6">
+                    <a href="#" class="text-gray-600 hover:text-gray-900 transition-colors">Explore Careers</a>
+                    <a href="#" class="text-gray-600 hover:text-gray-900 transition-colors">Resources</a>
+                    <a href="#" class="text-gray-600 hover:text-gray-900 transition-colors">About</a>
+                    <button class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                        Get Started
+                    </button>
+                </div>
+                <button class="md:hidden">
+                    <i class="fas fa-bars text-gray-600"></i>
+                </button>
+            </div>
+        </nav>
+    </header>
+    <!-- @END_COMPONENT: Header -->
+
+    <div class="min-h-screen">
+        <!-- @COMPONENT: HeroSection -->
+        <section class="bg-gradient-to-br from-blue-50 via-white to-purple-50 py-16 lg:py-24">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h1 class="text-4xl lg:text-6xl font-bold text-gray-900 mb-6">
+                        Discover Your
+                        <span class="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                            Dream Career
+                        </span>
+                    </h1>
+                    <p class="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
+                        Get personalized career guidance powered by AI. Explore career paths, discover skills you need, and create your roadmap to success.
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                        <button data-event="click:startCareerAssessment" class="bg-primary text-white px-8 py-4 rounded-xl text-lg font-semibold hover:bg-blue-700 transition-all transform hover:scale-105 shadow-lg">
+                            <i class="fas fa-rocket mr-2"></i>
+                            Start Career Assessment
+                        </button>
+                        <button data-event="click:openChatInterface" class="border-2 border-primary text-primary px-8 py-4 rounded-xl text-lg font-semibold hover:bg-primary hover:text-white transition-all">
+                            <i class="fas fa-comments mr-2"></i>
+                            Chat with AI Guide
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- @END_COMPONENT: HeroSection -->
+
+        <!-- @COMPONENT: CareerCategories -->
+        <section class="py-16 bg-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold text-gray-900 mb-4">Explore Career Categories</h2>
+                    <p class="text-lg text-gray-600">Find your passion across different industries and fields</p>
+                </div>
+                
+                <!-- @MAP: careerCategories.map(category => ( -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="bg-gray-50 rounded-2xl p-6 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 cursor-pointer" data-event="click:selectCategory" data-category="technology">
+                        <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
+                            <i class="fas fa-code text-primary text-xl"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold text-gray-900 mb-2">Technology</h3>
+                        <p class="text-gray-600 mb-4">Software development, AI, cybersecurity, data science</p>
+                        <div class="flex items-center text-primary font-medium">
+                            <span>Explore paths</span>
+                            <i class="fas fa-arrow-right ml-2 text-sm"></i>
+                        </div>
+                    </div>
+
+                    <div class="bg-gray-50 rounded-2xl p-6 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 cursor-pointer" data-event="click:selectCategory" data-category="healthcare">
+                        <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4">
+                            <i class="fas fa-heartbeat text-success text-xl"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold text-gray-900 mb-2">Healthcare</h3>
+                        <p class="text-gray-600 mb-4">Medicine, nursing, therapy, medical research</p>
+                        <div class="flex items-center text-primary font-medium">
+                            <span>Explore paths</span>
+                            <i class="fas fa-arrow-right ml-2 text-sm"></i>
+                        </div>
+                    </div>
+
+                    <div class="bg-gray-50 rounded-2xl p-6 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 cursor-pointer" data-event="click:selectCategory" data-category="business">
+                        <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4">
+                            <i class="fas fa-chart-line text-secondary text-xl"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold text-gray-900 mb-2">Business</h3>
+                        <p class="text-gray-600 mb-4">Marketing, finance, consulting, entrepreneurship</p>
+                        <div class="flex items-center text-primary font-medium">
+                            <span>Explore paths</span>
+                            <i class="fas fa-arrow-right ml-2 text-sm"></i>
+                        </div>
+                    </div>
+
+                    <div class="bg-gray-50 rounded-2xl p-6 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 cursor-pointer" data-event="click:selectCategory" data-category="creative">
+                        <div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mb-4">
+                            <i class="fas fa-palette text-warning text-xl"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold text-gray-900 mb-2">Creative Arts</h3>
+                        <p class="text-gray-600 mb-4">Design, writing, music, film, digital art</p>
+                        <div class="flex items-center text-primary font-medium">
+                            <span>Explore paths</span>
+                            <i class="fas fa-arrow-right ml-2 text-sm"></i>
+                        </div>
+                    </div>
+
+                    <div class="bg-gray-50 rounded-2xl p-6 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 cursor-pointer" data-event="click:selectCategory" data-category="education">
+                        <div class="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center mb-4">
+                            <i class="fas fa-graduation-cap text-indigo-600 text-xl"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold text-gray-900 mb-2">Education</h3>
+                        <p class="text-gray-600 mb-4">Teaching, training, curriculum development</p>
+                        <div class="flex items-center text-primary font-medium">
+                            <span>Explore paths</span>
+                            <i class="fas fa-arrow-right ml-2 text-sm"></i>
+                        </div>
+                    </div>
+
+                    <div class="bg-gray-50 rounded-2xl p-6 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 cursor-pointer" data-event="click:selectCategory" data-category="science">
+                        <div class="w-12 h-12 bg-teal-100 rounded-lg flex items-center justify-center mb-4">
+                            <i class="fas fa-microscope text-teal-600 text-xl"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold text-gray-900 mb-2">Science & Research</h3>
+                        <p class="text-gray-600 mb-4">Research, laboratory work, environmental science</p>
+                        <div class="flex items-center text-primary font-medium">
+                            <span>Explore paths</span>
+                            <i class="fas fa-arrow-right ml-2 text-sm"></i>
+                        </div>
+                    </div>
+                </div>
+                <!-- @END_MAP )) -->
+            </div>
+        </section>
+        <!-- @END_COMPONENT: CareerCategories -->
+
+        <!-- @COMPONENT: AIFeaturesSection -->
+        <section class="py-16 bg-gray-50">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold text-gray-900 mb-4">AI-Powered Career Guidance</h2>
+                    <p class="text-lg text-gray-600">Experience personalized career advice like never before</p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                    <div class="space-y-8">
+                        <div class="flex items-start space-x-4">
+                            <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                                <i class="fas fa-brain text-primary text-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-semibold text-gray-900 mb-2">Intelligent Career Matching</h3>
+                                <p class="text-gray-600">Our AI analyzes your skills, interests, and goals to recommend perfect career matches tailored just for you.</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start space-x-4">
+                            <div class="w-12 h-12 bg-secondary/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                                <i class="fas fa-route text-secondary text-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-semibold text-gray-900 mb-2">Personalized Roadmaps</h3>
+                                <p class="text-gray-600">Get step-by-step career roadmaps with skills to learn, certifications to earn, and milestones to achieve.</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start space-x-4">
+                            <div class="w-12 h-12 bg-success/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                                <i class="fas fa-comments text-success text-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-semibold text-gray-900 mb-2">24/7 Career Coach</h3>
+                                <p class="text-gray-600">Chat with our AI career coach anytime for guidance, advice, and answers to your career questions.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Chat Interface Preview -->
+                    <div class="bg-white rounded-2xl shadow-xl p-6 max-w-md mx-auto">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-8 h-8 bg-gradient-to-r from-primary to-secondary rounded-full flex items-center justify-center">
+                                    <i class="fas fa-robot text-white text-sm"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-gray-900">AI Career Guide</h4>
+                                    <p class="text-sm text-success flex items-center">
+                                        <span class="w-2 h-2 bg-success rounded-full mr-2"></span>
+                                        Online
+                                    </p>
+                                </div>
+                            </div>
+                            <button class="text-gray-400 hover:text-gray-600">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+
+                        <div class="space-y-4 h-64 overflow-y-auto mb-4">
+                            <div class="flex items-start space-x-3">
+                                <div class="w-6 h-6 bg-gradient-to-r from-primary to-secondary rounded-full flex items-center justify-center flex-shrink-0">
+                                    <i class="fas fa-robot text-white text-xs"></i>
+                                </div>
+                                <div class="bg-gray-100 rounded-2xl rounded-tl-sm px-4 py-3 max-w-xs">
+                                    <p class="text-sm text-gray-800">Hi! I'm your AI career guide. What career field interests you most?</p>
+                                </div>
+                            </div>
+
+                            <div class="flex items-start space-x-3 justify-end">
+                                <div class="bg-primary rounded-2xl rounded-tr-sm px-4 py-3 max-w-xs">
+                                    <p class="text-sm text-white">I'm interested in technology and artificial intelligence</p>
+                                </div>
+                                <div class="w-6 h-6 bg-gray-300 rounded-full flex items-center justify-center flex-shrink-0">
+                                    <span class="text-xs font-medium text-gray-600">You</span>
+                                </div>
+                            </div>
+
+                            <div class="flex items-start space-x-3">
+                                <div class="w-6 h-6 bg-gradient-to-r from-primary to-secondary rounded-full flex items-center justify-center flex-shrink-0">
+                                    <i class="fas fa-robot text-white text-xs"></i>
+                                </div>
+                                <div class="bg-gray-100 rounded-2xl rounded-tl-sm px-4 py-3 max-w-xs">
+                                    <p class="text-sm text-gray-800">Great choice! AI is booming. Are you more interested in machine learning, natural language processing, or computer vision?</p>
+                                </div>
+                            </div>
+
+                            <!-- Typing indicator -->
+                            <div class="flex items-start space-x-3" data-mock="true">
+                                <div class="w-6 h-6 bg-gradient-to-r from-primary to-secondary rounded-full flex items-center justify-center flex-shrink-0">
+                                    <i class="fas fa-robot text-white text-xs"></i>
+                                </div>
+                                <div class="bg-gray-100 rounded-2xl rounded-tl-sm px-4 py-3">
+                                    <div class="flex space-x-1">
+                                        <span class="typing-indicator"></span>
+                                        <span class="typing-indicator"></span>
+                                        <span class="typing-indicator"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="border-t pt-4">
+                            <div class="flex items-center space-x-3">
+                                <input type="text" placeholder="Type your message..." class="flex-1 border border-gray-300 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" data-mock="true">
+                                <button class="bg-primary text-white rounded-full w-10 h-10 flex items-center justify-center hover:bg-blue-700 transition-colors" data-event="click:sendMessage">
+                                    <i class="fas fa-paper-plane text-sm"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- @END_COMPONENT: AIFeaturesSection -->
+
+        <!-- @COMPONENT: CareerPathVisualization -->
+        <section class="py-16 bg-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold text-gray-900 mb-4">Your Career Journey Visualization</h2>
+                    <p class="text-lg text-gray-600">See how your career path unfolds step by step</p>
+                </div>
+
+                <!-- Sample Career Path for Software Developer -->
+                <div class="max-w-4xl mx-auto">
+                    <div class="bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl p-8">
+                        <div class="text-center mb-8">
+                            <h3 class="text-2xl font-bold text-gray-900 mb-2">Software Developer Career Path</h3>
+                            <p class="text-gray-600">Based on your interests in technology and programming</p>
+                        </div>
+
+                        <!-- Timeline -->
+                        <div class="space-y-8">
+                            <!-- Step 1 -->
+                            <div class="flex items-start space-x-6">
+                                <div class="flex flex-col items-center">
+                                    <div class="w-12 h-12 bg-primary rounded-full flex items-center justify-center text-white font-bold">1</div>
+                                    <div class="w-1 h-16 bg-gray-300 mt-2"></div>
+                                </div>
+                                <div class="flex-1 pb-8">
+                                    <div class="bg-white rounded-xl p-6 shadow-sm">
+                                        <div class="flex items-center justify-between mb-3">
+                                            <h4 class="text-lg font-semibold text-gray-900">Learn Programming Fundamentals</h4>
+                                            <span class="bg-blue-100 text-primary px-3 py-1 rounded-full text-sm font-medium">3-6 months</span>
+                                        </div>
+                                        <p class="text-gray-600 mb-4">Master the basics of programming with languages like Python, JavaScript, or Java</p>
+                                        <div class="flex flex-wrap gap-2">
+                                            <span class="bg-gray-100 text-gray-700 px-3 py-1 rounded-lg text-sm">Python</span>
+                                            <span class="bg-gray-100 text-gray-700 px-3 py-1 rounded-lg text-sm">HTML/CSS</span>
+                                            <span class="bg-gray-100 text-gray-700 px-3 py-1 rounded-lg text-sm">Git</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Step 2 -->
+                            <div class="flex items-start space-x-6">
+                                <div class="flex flex-col items-center">
+                                    <div class="w-12 h-12 bg-primary rounded-full flex items-center justify-center text-white font-bold">2</div>
+                                    <div class="w-1 h-16 bg-gray-300 mt-2"></div>
+                                </div>
+                                <div class="flex-1 pb-8">
+                                    <div class="bg-white rounded-xl p-6 shadow-sm">
+                                        <div class="flex items-center justify-between mb-3">
+                                            <h4 class="text-lg font-semibold text-gray-900">Build Projects & Portfolio</h4>
+                                            <span class="bg-green-100 text-success px-3 py-1 rounded-full text-sm font-medium">6-12 months</span>
+                                        </div>
+                                        <p class="text-gray-600 mb-4">Create real-world projects to showcase your skills and build a strong portfolio</p>
+                                        <div class="flex flex-wrap gap-2">
+                                            <span class="bg-gray-100 text-gray-700 px-3 py-1 rounded-lg text-sm">React/Vue</span>
+                                            <span class="bg-gray-100 text-gray-700 px-3 py-1 rounded-lg text-sm">Node.js</span>
+                                            <span class="bg-gray-100 text-gray-700 px-3 py-1 rounded-lg text-sm">Databases</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Step 3 -->
+                            <div class="flex items-start space-x-6">
+                                <div class="flex flex-col items-center">
+                                    <div class="w-12 h-12 bg-success rounded-full flex items-center justify-center text-white font-bold">3</div>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="bg-white rounded-xl p-6 shadow-sm">
+                                        <div class="flex items-center justify-between mb-3">
+                                            <h4 class="text-lg font-semibold text-gray-900">Land Your First Job</h4>
+                                            <span class="bg-purple-100 text-secondary px-3 py-1 rounded-full text-sm font-medium">Ongoing</span>
+                                        </div>
+                                        <p class="text-gray-600 mb-4">Apply for junior developer positions and continue learning on the job</p>
+                                        <div class="flex flex-wrap gap-2">
+                                            <span class="bg-gray-100 text-gray-700 px-3 py-1 rounded-lg text-sm">Job Search</span>
+                                            <span class="bg-gray-100 text-gray-700 px-3 py-1 rounded-lg text-sm">Interviews</span>
+                                            <span class="bg-gray-100 text-gray-700 px-3 py-1 rounded-lg text-sm">Networking</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="text-center mt-8">
+                            <button class="bg-primary text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors" data-event="click:generateCustomPath">
+                                <i class="fas fa-magic mr-2"></i>
+                                Generate My Custom Path
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- @END_COMPONENT: CareerPathVisualization -->
+
+        <!-- @COMPONENT: ResourcesSection -->
+        <section class="py-16 bg-gray-50">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold text-gray-900 mb-4">Recommended Resources</h2>
+                    <p class="text-lg text-gray-600">Curated learning materials to accelerate your career growth</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- @MAP: resources.map(resource => ( -->
+                    <div class="bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow">
+                        <div class="flex items-center space-x-3 mb-4">
+                            <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-graduation-cap text-primary"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold text-gray-900" data-bind="resource.title">CS50 Introduction to Computer Science</h3>
+                                <p class="text-sm text-gray-500" data-bind="resource.provider">Harvard University</p>
+                            </div>
+                        </div>
+                        <p class="text-gray-600 text-sm mb-4" data-bind="resource.description">
+                            A comprehensive introduction to computer science and programming
+                        </p>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-2">
+                                <span class="bg-green-100 text-success px-2 py-1 rounded text-xs font-medium">Free</span>
+                                <span class="text-gray-500 text-xs">12 weeks</span>
+                            </div>
+                            <button class="text-primary font-medium text-sm hover:underline" data-event="click:openResource">
+                                View Course
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow">
+                        <div class="flex items-center space-x-3 mb-4">
+                            <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-certificate text-success"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold text-gray-900">Google Data Analytics Certificate</h3>
+                                <p class="text-sm text-gray-500">Google Career Certificates</p>
+                            </div>
+                        </div>
+                        <p class="text-gray-600 text-sm mb-4">
+                            Learn data analytics skills and tools used by professionals
+                        </p>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-2">
+                                <span class="bg-orange-100 text-warning px-2 py-1 rounded text-xs font-medium">$49/month</span>
+                                <span class="text-gray-500 text-xs">6 months</span>
+                            </div>
+                            <button class="text-primary font-medium text-sm hover:underline" data-event="click:openResource">
+                                View Course
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow">
+                        <div class="flex items-center space-x-3 mb-4">
+                            <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-book text-secondary"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold text-gray-900">The Complete Guide to UX Design</h3>
+                                <p class="text-sm text-gray-500">Interaction Design Foundation</p>
+                            </div>
+                        </div>
+                        <p class="text-gray-600 text-sm mb-4">
+                            Master user experience design principles and methodologies
+                        </p>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-2">
+                                <span class="bg-blue-100 text-primary px-2 py-1 rounded text-xs font-medium">$16/month</span>
+                                <span class="text-gray-500 text-xs">Self-paced</span>
+                            </div>
+                            <button class="text-primary font-medium text-sm hover:underline" data-event="click:openResource">
+                                View Course
+                            </button>
+                        </div>
+                    </div>
+                    <!-- @END_MAP )) -->
+                </div>
+
+                <div class="text-center mt-8">
+                    <button class="border-2 border-primary text-primary px-6 py-3 rounded-lg hover:bg-primary hover:text-white transition-all" data-event="click:viewAllResources">
+                        View All Resources
+                    </button>
+                </div>
+            </div>
+        </section>
+        <!-- @END_COMPONENT: ResourcesSection -->
+
+        <!-- @COMPONENT: OnboardingModal -->
+        <div id="onboarding-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden" data-modal="onboarding">
+            <div class="bg-white rounded-2xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+                <!-- Modal Header -->
+                <div class="flex items-center justify-between p-6 border-b">
+                    <h2 class="text-2xl font-bold text-gray-900">Career Assessment</h2>
+                    <button class="text-gray-400 hover:text-gray-600" data-event="click:closeModal">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+
+                <!-- Modal Content -->
+                <div class="p-6">
+                    <!-- @STATE: currentStep:number = 1 -->
+                    
+                    <!-- Step 1: Basic Info -->
+                    <div id="step-1" class="space-y-6">
+                        <div class="text-center mb-6">
+                            <h3 class="text-xl font-semibold text-gray-900 mb-2">Tell us about yourself</h3>
+                            <p class="text-gray-600">This helps us provide better career recommendations</p>
+                        </div>
+
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">What's your current situation?</label>
+                                <select class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" data-bind="user.currentSituation">
+                                    <option>Select your current situation</option>
+                                    <option>Student</option>
+                                    <option>Recent Graduate</option>
+                                    <option>Career Changer</option>
+                                    <option>Professional Looking to Advance</option>
+                                    <option>Returning to Workforce</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">What's your education level?</label>
+                                <select class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" data-bind="user.educationLevel">
+                                    <option>Select education level</option>
+                                    <option>High School</option>
+                                    <option>Associate Degree</option>
+                                    <option>Bachelor's Degree</option>
+                                    <option>Master's Degree</option>
+                                    <option>PhD or Higher</option>
+                                    <option>Self-taught/Bootcamp</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Years of work experience?</label>
+                                <select class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" data-bind="user.experience">
+                                    <option>Select experience level</option>
+                                    <option>No experience</option>
+                                    <option>1-2 years</option>
+                                    <option>3-5 years</option>
+                                    <option>6-10 years</option>
+                                    <option>10+ years</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="flex justify-end">
+                            <button class="bg-primary text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors" data-event="click:nextStep">
+                                Next Step
+                                <i class="fas fa-arrow-right ml-2"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Interests -->
+                    <div id="step-2" class="space-y-6 hidden">
+                        <div class="text-center mb-6">
+                            <h3 class="text-xl font-semibold text-gray-900 mb-2">What interests you most?</h3>
+                            <p class="text-gray-600">Select all that apply - this helps us understand your preferences</p>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3">
+                            <!-- @MAP: interests.map(interest => ( -->
+                            <label class="flex items-center p-4 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
+                                <input type="checkbox" class="mr-3 text-primary focus:ring-primary" data-bind="user.interests" value="problem-solving">
+                                <span class="text-gray-700">Problem Solving</span>
+                            </label>
+                            <label class="flex items-center p-4 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
+                                <input type="checkbox" class="mr-3 text-primary focus:ring-primary" data-bind="user.interests" value="creative-work">
+                                <span class="text-gray-700">Creative Work</span>
+                            </label>
+                            <label class="flex items-center p-4 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
+                                <input type="checkbox" class="mr-3 text-primary focus:ring-primary" data-bind="user.interests" value="helping-others">
+                                <span class="text-gray-700">Helping Others</span>
+                            </label>
+                            <label class="flex items-center p-4 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
+                                <input type="checkbox" class="mr-3 text-primary focus:ring-primary" data-bind="user.interests" value="data-analysis">
+                                <span class="text-gray-700">Data Analysis</span>
+                            </label>
+                            <label class="flex items-center p-4 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
+                                <input type="checkbox" class="mr-3 text-primary focus:ring-primary" data-bind="user.interests" value="leadership">
+                                <span class="text-gray-700">Leadership</span>
+                            </label>
+                            <label class="flex items-center p-4 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
+                                <input type="checkbox" class="mr-3 text-primary focus:ring-primary" data-bind="user.interests" value="technology">
+                                <span class="text-gray-700">Technology</span>
+                            </label>
+                            <!-- @END_MAP )) -->
+                        </div>
+
+                        <div class="flex justify-between">
+                            <button class="border border-gray-300 text-gray-700 px-6 py-3 rounded-lg hover:bg-gray-50 transition-colors" data-event="click:previousStep">
+                                <i class="fas fa-arrow-left mr-2"></i>
+                                Previous
+                            </button>
+                            <button class="bg-primary text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors" data-event="click:generateRecommendations">
+                                Generate Recommendations
+                                <i class="fas fa-magic ml-2"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- @END_COMPONENT: OnboardingModal -->
+
+        <!-- @COMPONENT: ChatInterface -->
+        <div id="chat-interface" class="fixed bottom-6 right-6 w-96 h-[500px] bg-white rounded-2xl shadow-2xl z-40 hidden" data-component="ChatInterface">
+            <div class="flex flex-col h-full">
+                <!-- Chat Header -->
+                <div class="flex items-center justify-between p-4 border-b bg-gradient-to-r from-primary to-secondary rounded-t-2xl">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
+                            <i class="fas fa-robot text-white"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold text-white">AI Career Guide</h4>
+                            <p class="text-xs text-white/80">Always here to help</p>
+                        </div>
+                    </div>
+                    <button class="text-white/80 hover:text-white" data-event="click:closeChatInterface">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+
+                <!-- Chat Messages -->
+                <div class="flex-1 overflow-y-auto p-4 space-y-4" data-implementation="Should scroll to bottom on new messages">
+                    <div class="flex items-start space-x-3">
+                        <div class="w-6 h-6 bg-gradient-to-r from-primary to-secondary rounded-full flex items-center justify-center flex-shrink-0">
+                            <i class="fas fa-robot text-white text-xs"></i>
+                        </div>
+                        <div class="bg-gray-100 rounded-2xl rounded-tl-sm px-4 py-3 max-w-xs">
+                            <p class="text-sm text-gray-800">Hello! I'm your AI career guide. I'm here to help you explore career paths, answer questions about different industries, and provide personalized advice. What would you like to know?</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chat Input -->
+                <div class="border-t p-4">
+                    <div class="flex items-center space-x-3">
+                        <input type="text" placeholder="Ask me about careers, skills, or job market..." class="flex-1 border border-gray-300 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" data-event="keypress:handleChatInput">
+                        <button class="bg-primary text-white rounded-full w-10 h-10 flex items-center justify-center hover:bg-blue-700 transition-colors" data-event="click:sendChatMessage">
+                            <i class="fas fa-paper-plane text-sm"></i>
+                        </button>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-2 text-center">
+                        <!-- TODO: Implement API key management and rate limiting -->
+                        Powered by AI • Free tier available
+                    </p>
+                </div>
+            </div>
+        </div>
+        <!-- @END_COMPONENT: ChatInterface -->
+
+        <!-- Floating Chat Button -->
+        <button id="chat-toggle" class="fixed bottom-6 right-6 w-14 h-14 bg-gradient-to-r from-primary to-secondary rounded-full shadow-lg flex items-center justify-center text-white hover:shadow-xl transition-all transform hover:scale-105 z-30" data-event="click:toggleChatInterface">
+            <i class="fas fa-comments text-xl"></i>
+        </button>
+
+        <!-- @COMPONENT: Footer -->
+        <footer class="bg-gray-900 text-white py-12">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                    <div>
+                        <div class="flex items-center space-x-3 mb-4">
+                            <div class="w-8 h-8 bg-gradient-to-r from-primary to-secondary rounded-lg flex items-center justify-center">
+                                <i class="fas fa-route text-white text-sm"></i>
+                            </div>
+                            <span class="text-xl font-semibold">CareerGuide AI</span>
+                        </div>
+                        <p class="text-gray-400 text-sm">
+                            Empowering careers through intelligent guidance and personalized recommendations.
+                        </p>
+                    </div>
+
+                    <div>
+                        <h4 class="font-semibold mb-4">Features</h4>
+                        <ul class="space-y-2 text-sm text-gray-400">
+                            <li><a href="#" class="hover:text-white transition-colors">Career Assessment</a></li>
+                            <li><a href="#" class="hover:text-white transition-colors">AI Chat Guide</a></li>
+                            <li><a href="#" class="hover:text-white transition-colors">Career Paths</a></li>
+                            <li><a href="#" class="hover:text-white transition-colors">Resources</a></li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 class="font-semibold mb-4">Resources</h4>
+                        <ul class="space-y-2 text-sm text-gray-400">
+                            <li><a href="#" class="hover:text-white transition-colors">Blog</a></li>
+                            <li><a href="#" class="hover:text-white transition-colors">Career Tips</a></li>
+                            <li><a href="#" class="hover:text-white transition-colors">Industry Insights</a></li>
+                            <li><a href="#" class="hover:text-white transition-colors">Success Stories</a></li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 class="font-semibold mb-4">Support</h4>
+                        <ul class="space-y-2 text-sm text-gray-400">
+                            <li><a href="#" class="hover:text-white transition-colors">Help Center</a></li>
+                            <li><a href="#" class="hover:text-white transition-colors">Contact Us</a></li>
+                            <li><a href="#" class="hover:text-white transition-colors">Privacy Policy</a></li>
+                            <li><a href="#" class="hover:text-white transition-colors">Terms of Service</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="border-t border-gray-800 mt-8 pt-8 text-center text-sm text-gray-400">
+                    <p>&copy; 2024 CareerGuide AI. All rights reserved. Built with AI-powered career guidance.</p>
+                </div>
+            </div>
+        </footer>
+        <!-- @END_COMPONENT: Footer -->
+    </div>
+
+    <script>
+        // TODO: Implement business logic, API calls, and state management
+        (function() {
+            // Modal controls
+            const onboardingModal = document.getElementById('onboarding-modal');
+            const chatInterface = document.getElementById('chat-interface');
+            const chatToggle = document.getElementById('chat-toggle');
+
+            // Event listeners for UI interactions
+            document.addEventListener('click', function(e) {
+                // Start Career Assessment
+                if (e.target.closest('[data-event="click:startCareerAssessment"]')) {
+                    onboardingModal.classList.remove('hidden');
+                }
+
+                // Open Chat Interface
+                if (e.target.closest('[data-event="click:openChatInterface"]') || 
+                    e.target.closest('[data-event="click:toggleChatInterface"]')) {
+                    chatInterface.classList.toggle('hidden');
+                    chatToggle.classList.toggle('hidden');
+                }
+
+                // Close modals
+                if (e.target.closest('[data-event="click:closeModal"]')) {
+                    onboardingModal.classList.add('hidden');
+                }
+
+                if (e.target.closest('[data-event="click:closeChatInterface"]')) {
+                    chatInterface.classList.add('hidden');
+                    chatToggle.classList.remove('hidden');
+                }
+            });
+
+            // Category selection animation
+            document.querySelectorAll('[data-event="click:selectCategory"]').forEach(card => {
+                card.addEventListener('click', function() {
+                    // TODO: Implement category selection logic
+                    console.log('Selected category:', this.dataset.category);
+                });
+            });
+
+            // Chat input handling
+            const chatInput = document.querySelector('[data-event="keypress:handleChatInput"]');
+            if (chatInput) {
+                chatInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        // TODO: Send message to AI API
+                        console.log('Sending message:', this.value);
+                        this.value = '';
+                    }
+                });
+            }
+
+            // Smooth scrolling for anchor links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        target.scrollIntoView({
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+
+            // Loading states for async operations
+            function showLoadingState(element) {
+                const originalText = element.textContent;
+                element.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Loading...';
+                element.disabled = true;
+                
+                // TODO: Replace with actual async operation
+                setTimeout(() => {
+                    element.textContent = originalText;
+                    element.disabled = false;
+                }, 2000);
+            }
+
+            // Add loading states to buttons
+            document.querySelectorAll('[data-event*="click:generate"]').forEach(button => {
+                button.addEventListener('click', function() {
+                    showLoadingState(this);
+                });
+            });
+        })();
+    </script>
+</body>
+</html>

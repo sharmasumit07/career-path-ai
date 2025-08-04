@@ -5,6 +5,7 @@ import { generateCareerRecommendations, processChatMessage, generateCustomCareer
 import { insertUserSchema, insertConversationSchema, insertCareerRecommendationSchema } from "@shared/schema";
 import type { AssessmentData, ChatMessage } from "@shared/schema";
 import { z } from "zod";
+import { assessmentLimiter, chatLimiter, validateSession, requireJsonContent } from "./middleware";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   
@@ -26,31 +27,65 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Submit career assessment
-  app.post("/api/assessment", async (req, res) => {
+  app.post("/api/assessment", assessmentLimiter, requireJsonContent, async (req, res) => {
     try {
       const { sessionId, assessmentData } = req.body;
       
-      if (!sessionId || !assessmentData) {
-        return res.status(400).json({ message: "Session ID and assessment data are required" });
+      // Input validation
+      if (!sessionId || typeof sessionId !== 'string') {
+        return res.status(400).json({ 
+          message: "Valid session ID is required",
+          code: "MISSING_SESSION_ID"
+        });
       }
 
-      // Validate assessment data
+      if (!assessmentData || typeof assessmentData !== 'object') {
+        return res.status(400).json({ 
+          message: "Assessment data is required",
+          code: "MISSING_ASSESSMENT_DATA"
+        });
+      }
+
+      // Validate assessment data structure
       const assessmentSchema = z.object({
-        currentSituation: z.string().min(1),
-        educationLevel: z.string().min(1),
-        experience: z.string().min(1),
-        interests: z.array(z.string()).min(1),
+        currentSituation: z.string().min(1, "Current situation is required"),
+        educationLevel: z.string().min(1, "Education level is required"),
+        experience: z.string().min(1, "Experience level is required"),
+        interests: z.array(z.string()).min(1, "At least one interest is required"),
         skills: z.array(z.string()).optional(),
         goals: z.string().optional(),
       });
 
-      const validatedData = assessmentSchema.parse(assessmentData);
+      const validationResult = assessmentSchema.safeParse(assessmentData);
+      if (!validationResult.success) {
+        return res.status(400).json({ 
+          message: "Invalid assessment data format",
+          code: "INVALID_ASSESSMENT_DATA",
+          errors: validationResult.error.errors 
+        });
+      }
+
+      const validatedData = validationResult.data;
+
+      // Check if user exists
+      const existingUser = await storage.getUser(sessionId);
+      if (!existingUser) {
+        return res.status(404).json({ 
+          message: "Session not found. Please create a new session.",
+          code: "SESSION_NOT_FOUND"
+        });
+      }
 
       // Update user with assessment data
       const user = await storage.updateUserAssessment(sessionId, validatedData);
 
-      // Generate AI recommendations
-      const recommendations = await generateCareerRecommendations(validatedData);
+      // Generate AI recommendations with timeout
+      const recommendationsPromise = generateCareerRecommendations(validatedData);
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('AI service timeout')), 30000)
+      );
+      
+      const recommendations = await Promise.race([recommendationsPromise, timeoutPromise]) as any;
 
       // Store recommendations
       await storage.createCareerRecommendation({
@@ -66,8 +101,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
     } catch (error) {
       console.error('Error processing assessment:', error);
+      
+      // Handle specific error types
+      if (error instanceof Error) {
+        if (error.message.includes('timeout')) {
+          return res.status(408).json({ 
+            message: "Request timeout. Please try again.",
+            code: "REQUEST_TIMEOUT"
+          });
+        }
+        
+        if (error.message.includes('API key')) {
+          return res.status(503).json({ 
+            message: "AI service temporarily unavailable. Using demo recommendations.",
+            code: "AI_SERVICE_UNAVAILABLE"
+          });
+        }
+      }
+      
       res.status(500).json({ 
-        message: error instanceof Error ? error.message : "Failed to process assessment" 
+        message: "Failed to process assessment. Please try again.",
+        code: "INTERNAL_ERROR"
       });
     }
   });

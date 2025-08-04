@@ -6,9 +6,15 @@ import {
   type CareerRecommendation,
   type InsertCareerRecommendation,
   type ChatMessage,
-  type AssessmentData
+  type AssessmentData,
+  users,
+  conversations,
+  careerRecommendations
 } from "@shared/schema";
 import { randomUUID } from "crypto";
+import { drizzle } from "drizzle-orm/neon-http";
+import { neon } from "@neondatabase/serverless";
+import { eq } from "drizzle-orm";
 
 export interface IStorage {
   // User methods
@@ -117,4 +123,161 @@ export class MemStorage implements IStorage {
   }
 }
 
-export const storage = new MemStorage();
+// Database storage implementation
+class DatabaseStorage implements IStorage {
+  private db: any;
+
+  constructor() {
+    if (!process.env.DATABASE_URL) {
+      throw new Error("DATABASE_URL environment variable is required for database storage");
+    }
+    
+    const sql = neon(process.env.DATABASE_URL);
+    this.db = drizzle(sql);
+  }
+
+  async getUser(sessionId: string): Promise<User | undefined> {
+    try {
+      const result = await this.db
+        .select()
+        .from(users)
+        .where(eq(users.sessionId, sessionId))
+        .limit(1);
+      
+      return result[0] || undefined;
+    } catch (error) {
+      console.error('Error getting user:', error);
+      return undefined;
+    }
+  }
+
+  async createUser(insertUser: InsertUser): Promise<User> {
+    try {
+      const result = await this.db
+        .insert(users)
+        .values(insertUser)
+        .returning();
+      
+      return result[0];
+    } catch (error) {
+      console.error('Error creating user:', error);
+      throw error;
+    }
+  }
+
+  async updateUserAssessment(sessionId: string, assessmentData: AssessmentData): Promise<User> {
+    try {
+      const result = await this.db
+        .update(users)
+        .set({ assessmentData: assessmentData as any })
+        .where(eq(users.sessionId, sessionId))
+        .returning();
+      
+      return result[0];
+    } catch (error) {
+      console.error('Error updating user assessment:', error);
+      throw error;
+    }
+  }
+
+  async getConversation(sessionId: string): Promise<Conversation | undefined> {
+    try {
+      const result = await this.db
+        .select()
+        .from(conversations)
+        .where(eq(conversations.sessionId, sessionId))
+        .limit(1);
+      
+      return result[0] || undefined;
+    } catch (error) {
+      console.error('Error getting conversation:', error);
+      return undefined;
+    }
+  }
+
+  async createConversation(insertConversation: InsertConversation): Promise<Conversation> {
+    try {
+      const result = await this.db
+        .insert(conversations)
+        .values(insertConversation)
+        .returning();
+      
+      return result[0];
+    } catch (error) {
+      console.error('Error creating conversation:', error);
+      throw error;
+    }
+  }
+
+  async updateConversation(sessionId: string, messages: ChatMessage[]): Promise<Conversation> {
+    try {
+      const existing = await this.getConversation(sessionId);
+      
+      if (existing) {
+        const result = await this.db
+          .update(conversations)
+          .set({ 
+            messages: messages as any,
+            updatedAt: new Date()
+          })
+          .where(eq(conversations.sessionId, sessionId))
+          .returning();
+        
+        return result[0];
+      } else {
+        return this.createConversation({
+          sessionId,
+          messages: messages as any,
+        });
+      }
+    } catch (error) {
+      console.error('Error updating conversation:', error);
+      throw error;
+    }
+  }
+
+  async getCareerRecommendations(sessionId: string): Promise<CareerRecommendation[]> {
+    try {
+      const result = await this.db
+        .select()
+        .from(careerRecommendations)
+        .where(eq(careerRecommendations.sessionId, sessionId));
+      
+      return result;
+    } catch (error) {
+      console.error('Error getting career recommendations:', error);
+      return [];
+    }
+  }
+
+  async createCareerRecommendation(insertRecommendation: InsertCareerRecommendation): Promise<CareerRecommendation> {
+    try {
+      const result = await this.db
+        .insert(careerRecommendations)
+        .values(insertRecommendation)
+        .returning();
+      
+      return result[0];
+    } catch (error) {
+      console.error('Error creating career recommendation:', error);
+      throw error;
+    }
+  }
+}
+
+// Storage factory function
+function createStorage(): IStorage {
+  if (process.env.DATABASE_URL && process.env.NODE_ENV === 'production') {
+    try {
+      return new DatabaseStorage();
+    } catch (error) {
+      console.warn('Failed to initialize database storage, falling back to memory storage:', error);
+      return new MemStorage();
+    }
+  }
+  
+  console.log('Using in-memory storage for development');
+  return new MemStorage();
+}
+
+export const storage = createStorage();
